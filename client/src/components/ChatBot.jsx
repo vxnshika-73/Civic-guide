@@ -4,36 +4,48 @@ import axios from "axios";
 const ChatBot = () => {
   const [query, setQuery] = useState("");
   const [response, setResponse] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleAsk = async () => {
-    const res = await axios.post("http://localhost:5000/api/chat", {
-      query,
-    });
+    if (!query.trim()) return;
 
-    setResponse(res.data.answer);
+    setLoading(true);
+    setResponse("");
+
+    try {
+      const res = await axios.post("http://localhost:5000/api/chat", {
+        query,
+      });
+
+      setResponse(res.data.answer);
+    } catch (error) {
+      setResponse("❌ Failed to get response.");
+    }
+
+    setLoading(false);
   };
 
   return (
-    <div className="bg-slate-900 p-6 rounded-2xl shadow-lg">
-      <h2 className="text-2xl font-bold mb-4">AI Chat Assistant</h2>
+    <div className="bg-slate-900 p-6 rounded-2xl shadow-lg min-h-[450px]">
+      <h2 className="text-3xl font-bold mb-5">AI Chat Assistant</h2>
 
       <input
         type="text"
-        placeholder="Ask about government process..."
+        placeholder="Ask any government question..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className="w-full p-3 rounded-lg bg-slate-800 mb-3 text-white"
+        className="w-full p-4 rounded-xl bg-slate-800 text-white outline-none mb-4"
       />
 
       <button
         onClick={handleAsk}
-        className="bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded-lg"
+        className="bg-cyan-500 hover:bg-cyan-600 px-5 py-3 rounded-xl font-semibold transition"
       >
-        Ask AI
+        {loading ? "Thinking..." : "Ask AI"}
       </button>
 
       {response && (
-        <div className="mt-4 p-3 bg-slate-800 rounded-lg text-sm whitespace-pre-line">
+        <div className="mt-5 bg-slate-800 p-4 rounded-xl whitespace-pre-line leading-7 text-sm text-gray-100 border border-slate-700">
           {response}
         </div>
       )}

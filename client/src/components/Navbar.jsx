@@ -1,13 +1,18 @@
-const Navbar = () => {
+const Navbar = ({ scrollToDemo }) => {
   return (
-    <nav className="flex justify-between items-center px-8 py-5 bg-slate-900 border-b border-slate-800">
-      <h1 className="text-2xl font-bold text-cyan-400">
+    <nav className="sticky top-0 z-50 bg-slate-950 border-b border-slate-800 px-8 py-5 flex justify-between items-center">
+
+      <h1 className="text-3xl font-bold text-cyan-400">
         CivicGuide AI
       </h1>
 
-      <button className="bg-cyan-500 hover:bg-cyan-600 px-5 py-2 rounded-lg font-semibold">
+      <button
+        onClick={scrollToDemo}
+        className="bg-cyan-500 hover:bg-cyan-600 px-5 py-2 rounded-xl font-semibold"
+      >
         Get Started
       </button>
+
     </nav>
   );
 };

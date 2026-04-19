@@ -1,36 +1,72 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const axios = require("axios");
 const { retrieveRelevantDocs } = require("./ragService");
 
 require("dotenv").config();
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
 const getAIResponse = async (query) => {
-  console.log("QUERY:", query);
-
   const docs = await retrieveRelevantDocs(query);
-  console.log("DOCS:", docs);
 
   const context = docs.map(doc => doc.content).join("\n\n");
-  console.log("CONTEXT:", context);
 
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
   const prompt = `
 You are CivicGuide AI.
 
-Answer ONLY using the context below.
-If answer is not found in context, say "I couldn't find relevant government information."
+Use only the context below.
+
+Give response in this format:
+
+✅ Process Name
+
+📌 Steps:
+1.
+2.
+3.
+
+📄 Required Documents:
+- item
+- item
+
+💰 Fees:
+Mention if available else Not specified
+
+🌐 Official Portal:
+official link only
+
+Keep answer clean, short, readable.
 
 Context:
 ${context}
 
-User Question:
+Question:
 ${query}
 `;
 
-  const result = await model.generateContent(prompt);
-  console.log("RAW GEMINI:", result.response.text());
-  return result.response.text();
+  try {
+    const response = await axios.post(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        model: "google/gemma-3-4b-it:free",
+        messages: [
+          {
+            role: "user",
+            content: prompt
+          }
+        ]
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    return response.data.choices[0].message.content;
+
+  } catch (error) {
+    console.log(error.response?.data || error.message);
+    return "AI service temporarily unavailable.";
+  }
 };
 
 module.exports = { getAIResponse };
