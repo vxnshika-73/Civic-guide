@@ -92,14 +92,7 @@ nodemon server.js
 
 ---
 
-# 📸 UI Preview
 
-Dark futuristic interface with:
-
-- Premium Landing Page
-- AI Chat Demo
-- Smooth Animations
-- Responsive Layout
 
 ---
 
